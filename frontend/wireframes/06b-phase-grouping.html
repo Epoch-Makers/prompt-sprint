@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>RetroAI — Retro Tahtası · Faz 2 Gruplama</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  body { background:#f5f5f5; font-family:system-ui,sans-serif; }
+  .col-board { background:#eee; padding:12px; border-radius:6px; min-height:300px; }
+  .col-header { font-weight:700; color:#444; margin-bottom:12px; text-transform:uppercase; font-size:12px; letter-spacing:0.5px; display:flex; justify-content:space-between; }
+  .col-next { border:2px solid #777; }
+  .retro-card { background:#fff; border:1px solid #ccc; padding:10px; margin-bottom:8px; border-radius:4px; cursor:move; }
+  .retro-card.draggable::before { content:"⋮⋮ "; color:#aaa; }
+  .theme-badge { background:#ddd; padding:1px 6px; border-radius:3px; font-size:10px; color:#444; }
+  .banner { background:#eaeaea; border-left:4px solid #888; padding:8px 14px; margin-bottom:10px; font-size:13px; }
+  /* Phase progress bar */
+  .phase-bar { display:flex; align-items:center; gap:8px; }
+  .phase-step { padding:6px 14px; background:#e2e2e2; border-radius:20px; font-size:12px; color:#666; }
+  .phase-step.done { background:#bbb; color:#fff; }
+  .phase-step.active { background:#444; color:#fff; font-weight:700; }
+  .phase-arrow { color:#aaa; }
+  /* Theme panel */
+  .theme-panel { background:#fff; border:1px solid #ccc; padding:12px; border-radius:6px; }
+  .theme-card { background:#f8f8f8; border:1px solid #ddd; padding:10px; margin-bottom:8px; border-radius:4px; }
+  .urgency-high { background:#888; color:#fff; padding:1px 6px; border-radius:3px; font-size:10px; }
+  .urgency-mid { background:#bbb; color:#fff; padding:1px 6px; border-radius:3px; font-size:10px; }
+  .insight-card { background:#fafafa; border:1px dashed #999; padding:10px; margin-bottom:8px; border-radius:4px; }
+  .ai-icon { color:#777; }
+  .participation-dot { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:3px; }
+  .dot-green { background:#888; } .dot-yellow { background:#bbb; } .dot-grey { background:#ddd; border:1px solid #ccc; }
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<nav class="navbar navbar-light bg-light border-bottom px-3 py-2">
+  <span class="fs-5 fw-bold text-secondary">RetroAI</span>
+  <select class="form-select form-select-sm w-auto"><option>Payment Squad</option></select>
+  <div class="text-muted small">Ayşe Yılmaz (board sahibi) · <a href="01-login.html">Çıkış</a></div>
+</nav>
+
+<!-- Sub bar with PhaseProgressBar -->
+<div class="bg-white border-bottom px-3 py-2">
+  <div class="d-flex align-items-center flex-wrap gap-3">
+    <strong class="text-secondary">Sprint 24 Retro</strong>
+
+    <!-- Phase progress -->
+    <div class="phase-bar">
+      <span class="phase-step done">✓ 1. Yazma</span>
+      <span class="phase-arrow">→</span>
+      <span class="phase-step active">2. Gruplama</span>
+      <span class="phase-arrow">→</span>
+      <span class="phase-step">3. Oylama</span>
+      <span class="phase-arrow">→</span>
+      <span class="phase-step">4. Final Değerlendirme</span>
+    </div>
+
+    <!-- Phase controls (board owner only) -->
+    <div class="ms-auto">
+      <button class="btn btn-sm btn-outline-secondary" onclick="location='06a-phase-writing.html'">← Yazma'ya Dön</button>
+      <button class="btn btn-sm btn-secondary" onclick="location='06c-phase-voting.html'">Oylamaya Geç →</button>
+    </div>
+  </div>
+  <div class="d-flex align-items-center gap-3 mt-2 small text-muted">
+    <span>
+      Katılım:
+      <span class="participation-dot dot-green"></span>Ayşe (3)
+      <span class="participation-dot dot-yellow ms-1"></span>Burak (1)
+      <span class="participation-dot dot-grey ms-1"></span>Can (0)
+      <span class="participation-dot dot-green ms-1"></span>Misafir: Ahmet K. (2)
+    </span>
+    <span class="badge bg-warning text-dark">Mock Mode</span>
+  </div>
+</div>
+
+<div class="container-fluid p-3">
+
+  <!-- Banners -->
+  <div class="banner">📊 <strong>Sprint Bağlamı:</strong> 12 story planlandı, 8 tamam, 2 bug, velocity %70.</div>
+
+  <!-- Phase-specific info -->
+  <div class="alert alert-light border d-flex justify-content-between align-items-center">
+    <div>
+      <strong>Gruplama fazındasın.</strong> Kartlar kolonlar arası taşınabilir. Yeni kart eklenemez, oy verilemez.
+      <br><small class="text-muted">"AI Analiz Et" butonuna basarak benzer kartları otomatik tema kümelerine grupla.</small>
+    </div>
+    <button class="btn btn-secondary">🤖 AI Analiz Et</button>
+  </div>
+
+  <div class="row g-3">
+
+    <!-- Left: 4 columns -->
+    <div class="col-lg-8">
+      <div class="row g-2">
+
+        <!-- GOOD -->
+        <div class="col-md-6">
+          <div class="col-board">
+            <div class="col-header">
+              <span>İyi Giden</span>
+              <span class="text-muted">2 kart</span>
+            </div>
+            <div class="retro-card draggable">
+              Deploy otomasyonu hızlandı.
+              <div class="mt-1"><span class="theme-badge">QA İyileşmesi</span></div>
+            </div>
+            <div class="retro-card draggable">
+              QA reopen oranı %60 düştü.
+              <div class="mt-1"><span class="theme-badge">QA İyileşmesi</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- IMPROVE -->
+        <div class="col-md-6">
+          <div class="col-board">
+            <div class="col-header">
+              <span>Geliştirilebilir</span>
+              <span class="text-muted">4 kart</span>
+            </div>
+            <div class="retro-card draggable">
+              Deploy süresi 40 dk'ya çıktı.
+              <div class="mt-1"><span class="theme-badge">CI/CD yavaşlığı</span></div>
+            </div>
+            <div class="retro-card draggable">
+              Pipeline retry'lar artıyor.
+              <div class="mt-1"><span class="theme-badge">CI/CD yavaşlığı</span></div>
+            </div>
+            <div class="retro-card draggable">
+              Build cache miss oranı yüksek.
+              <div class="mt-1"><span class="theme-badge">CI/CD yavaşlığı</span></div>
+            </div>
+            <div class="retro-card draggable">
+              <span class="ai-icon">🤖</span> Code review süreleri 2 günü aşıyor.
+              <div class="mt-1"><span class="theme-badge">Code Review Yavaşlığı</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DISCUSS -->
+        <div class="col-md-6 mt-2">
+          <div class="col-board">
+            <div class="col-header">
+              <span>Tartışılacak</span>
+              <span class="text-muted">1 kart</span>
+            </div>
+            <div class="retro-card draggable">
+              Sprint planning çok mu uzun?
+              <div class="mt-1"><span class="theme-badge">Toplantı verimliliği</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NEXT_STEPS — vurgulu -->
+        <div class="col-md-6 mt-2">
+          <div class="col-board col-next">
+            <div class="col-header">
+              <span>Devam Adımları (AI önerileri buraya düşer)</span>
+              <span class="text-muted">3 kart</span>
+            </div>
+            <div class="retro-card draggable">
+              <span class="ai-icon">🤖</span> Deploy pipeline'ı 10 dk altına indir
+              <div class="mt-1"><small class="text-muted">AI önerisi · CI/CD yavaşlığı</small></div>
+            </div>
+            <div class="retro-card draggable">
+              <span class="ai-icon">🤖</span> Build cache yapılandırmasını gözden geçir
+              <div class="mt-1"><small class="text-muted">AI önerisi · CI/CD yavaşlığı</small></div>
+            </div>
+            <div class="retro-card draggable">
+              <span class="ai-icon">🤖</span> Code review SLA tanımla — 24 saat hedef
+              <div class="mt-1"><small class="text-muted">AI önerisi · Code Review Yavaşlığı</small></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Right: ThemeClusterPanel + JiraInsights -->
+    <div class="col-lg-4">
+      <div class="theme-panel mb-3">
+        <h6 class="text-secondary">🎯 Tema Kümeleri (AI çıktısı)</h6>
+
+        <div class="theme-card">
+          <div class="d-flex justify-content-between">
+            <strong>CI/CD yavaşlığı</strong>
+            <span class="urgency-high">YÜKSEK</span>
+          </div>
+          <div class="text-muted small">Moral: −3 · 3 kart bu kümede</div>
+        </div>
+
+        <div class="theme-card">
+          <div class="d-flex justify-content-between">
+            <strong>Code Review Yavaşlığı</strong>
+            <span class="urgency-mid">ORTA</span>
+          </div>
+          <div class="text-muted small">Moral: −1 · 1 kart bu kümede</div>
+        </div>
+
+        <div class="theme-card">
+          <div class="d-flex justify-content-between">
+            <strong>QA İyileşmesi</strong>
+            <span class="urgency-mid" style="background:#777">POZİTİF</span>
+          </div>
+          <div class="text-muted small">Moral: +3 · 2 kart bu kümede</div>
+        </div>
+      </div>
+
+      <div class="theme-panel">
+        <h6 class="text-secondary">🤖 Jira-Kaynaklı İçgörüler</h6>
+        <small class="text-muted d-block mb-2">AI ticket geçmişine baktı:</small>
+
+        <div class="insight-card">
+          <strong class="small">BUG-1453</strong>
+          <span class="theme-badge ms-1">STATUS_BOUNCING</span>
+          <div class="small text-muted mt-1">3 kez In Progress → To Do döndü</div>
+          <div class="small mt-1"><strong>Önerilen kart:</strong> Gereksinim netleştirme</div>
+          <button class="btn btn-sm btn-outline-secondary mt-2">+ Kart Olarak Ekle</button>
+        </div>
+
+        <div class="insight-card">
+          <strong class="small">STORY-892</strong>
+          <span class="theme-badge ms-1">LONG_CARRYOVER</span>
+          <div class="small text-muted mt-1">4 sprint'tir carry-over</div>
+          <button class="btn btn-sm btn-outline-secondary mt-2">+ Kart Olarak Ekle</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

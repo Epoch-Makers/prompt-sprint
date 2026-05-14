@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>RetroAI — Retro Tahtası · Faz 4 Final Değerlendirme & Aksiyon Girişi</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  body { background:#f5f5f5; font-family:system-ui,sans-serif; }
+  /* Phase bar */
+  .phase-bar { display:flex; align-items:center; gap:8px; }
+  .phase-step { padding:6px 14px; background:#e2e2e2; border-radius:20px; font-size:12px; color:#666; }
+  .phase-step.done { background:#bbb; color:#fff; }
+  .phase-step.active { background:#444; color:#fff; font-weight:700; }
+  .phase-arrow { color:#aaa; }
+  /* Top voted */
+  .top-voted-card { background:#fff; border:1px solid #999; padding:10px 14px; margin-bottom:8px; border-radius:6px; display:flex; justify-content:space-between; align-items:center; }
+  .top-voted-card .rank { background:#444; color:#fff; padding:4px 10px; border-radius:50%; font-weight:700; margin-right:12px; }
+  .top-voted-card .vote-num { background:#ddd; padding:4px 10px; border-radius:12px; font-size:13px; }
+  /* Action panel */
+  .action-panel { background:#fff; border:2px solid #888; border-radius:8px; padding:16px; }
+  .action-row { border-bottom:1px solid #eee; padding:12px 0; }
+  .action-row:last-child { border-bottom:0; }
+  /* Compact columns */
+  .col-board-mini { background:#eee; padding:8px; border-radius:4px; min-height:140px; font-size:12px; }
+  .col-mini-header { font-weight:700; color:#444; font-size:11px; text-transform:uppercase; margin-bottom:6px; }
+  .mini-card { background:#fff; border:1px solid #ddd; padding:5px 7px; margin-bottom:4px; border-radius:3px; font-size:11px; }
+  .col-next-highlight { border:2px solid #444; background:#e6e6e6; }
+  /* Misc */
+  .participation-dot { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:3px; }
+  .dot-green { background:#888; } .dot-yellow { background:#bbb; } .dot-grey { background:#ddd; border:1px solid #ccc; }
+  .maturity-box { background:#fff; border:1px solid #ccc; padding:16px; border-radius:8px; text-align:center; }
+  .gauge-mini { width:80px; height:80px; border:6px solid #888; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:22px; color:#333; margin:0 auto; }
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<nav class="navbar navbar-light bg-light border-bottom px-3 py-2">
+  <span class="fs-5 fw-bold text-secondary">RetroAI</span>
+  <select class="form-select form-select-sm w-auto"><option>Payment Squad</option></select>
+  <div class="text-muted small">Ayşe Yılmaz (board sahibi) · <a href="01-login.html">Çıkış</a></div>
+</nav>
+
+<!-- Sub bar -->
+<div class="bg-white border-bottom px-3 py-2">
+  <div class="d-flex align-items-center flex-wrap gap-3">
+    <strong class="text-secondary">Sprint 24 Retro</strong>
+
+    <div class="phase-bar">
+      <span class="phase-step done">✓ 1. Yazma</span>
+      <span class="phase-arrow">→</span>
+      <span class="phase-step done">✓ 2. Gruplama</span>
+      <span class="phase-arrow">→</span>
+      <span class="phase-step done">✓ 3. Oylama</span>
+      <span class="phase-arrow">→</span>
+      <span class="phase-step active">4. Final Değerlendirme</span>
+    </div>
+
+    <div class="ms-auto d-flex gap-2 align-items-center">
+      <button class="btn btn-sm btn-outline-secondary" onclick="location='06c-phase-voting.html'">← Oylamaya Dön</button>
+      <button class="btn btn-sm btn-dark">Retroyu Kapat ✓</button>
+    </div>
+  </div>
+  <div class="d-flex align-items-center gap-3 mt-2 small text-muted">
+    <span>
+      Katılım:
+      <span class="participation-dot dot-green"></span>Ayşe (3)
+      <span class="participation-dot dot-yellow ms-1"></span>Burak (1)
+      <span class="participation-dot dot-grey ms-1"></span>Can (0)
+      <span class="participation-dot dot-green ms-1"></span>Misafir: Ahmet K. (2)
+    </span>
+    <span class="badge bg-warning text-dark">Mock Mode</span>
+  </div>
+</div>
+
+<div class="container-fluid p-3">
+
+  <!-- Phase info -->
+  <div class="alert alert-light border">
+    <strong>Final Değerlendirme fazındasın.</strong> En çok oy alan kartları tartış, aksiyonları onayla, Jira'ya gönder. Olgunluk skorunu hesapla. Hazır olunca retroyu kapat.
+  </div>
+
+  <div class="row g-3">
+
+    <!-- Left: Top voted cards + Action panel -->
+    <div class="col-lg-8">
+
+      <!-- Top voted -->
+      <div class="mb-4">
+        <h5 class="text-secondary">🏆 En Çok Oy Alan Kartlar</h5>
+        <small class="text-muted d-block mb-2">Bu kartlar üzerinden tartışmayı yürüt.</small>
+
+        <div class="top-voted-card">
+          <div class="d-flex align-items-center">
+            <span class="rank">1</span>
+            <div>
+              <strong>Deploy pipeline'ı 10 dk altına indir</strong>
+              <div class="text-muted small">🤖 Devam Adımları · CI/CD yavaşlığı</div>
+            </div>
+          </div>
+          <span class="vote-num">6 oy</span>
+        </div>
+
+        <div class="top-voted-card">
+          <div class="d-flex align-items-center">
+            <span class="rank">2</span>
+            <div>
+              <strong>Deploy süresi 40 dk'ya çıktı</strong>
+              <div class="text-muted small">Geliştirilebilir · CI/CD yavaşlığı</div>
+            </div>
+          </div>
+          <span class="vote-num">5 oy</span>
+        </div>
+
+        <div class="top-voted-card">
+          <div class="d-flex align-items-center">
+            <span class="rank">3</span>
+            <div>
+              <strong>Code review süreleri 2 günü aşıyor</strong>
+              <div class="text-muted small">🤖 Geliştirilebilir · Code Review Yavaşlığı</div>
+            </div>
+          </div>
+          <span class="vote-num">4 oy</span>
+        </div>
+
+        <div class="top-voted-card">
+          <div class="d-flex align-items-center">
+            <span class="rank">4</span>
+            <div>
+              <strong>Pipeline retry'lar artıyor</strong>
+              <div class="text-muted small">Geliştirilebilir · CI/CD yavaşlığı</div>
+            </div>
+          </div>
+          <span class="vote-num">3 oy</span>
+        </div>
+      </div>
+
+      <!-- Action Approval Panel -->
+      <div class="action-panel">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="text-secondary mb-0">✅ Aksiyonları Onayla & Kaydet</h5>
+          <button class="btn btn-sm btn-outline-secondary">+ Manuel Aksiyon Ekle</button>
+        </div>
+        <small class="text-muted d-block mb-3">
+          AI önerileri + Devam Adımları kartlarından oluşturulan aksiyonlar. İstemediklerini işaretsiz bırak, başlık/sahip/deadline'ı düzenle.
+        </small>
+
+        <!-- Action 1 -->
+        <div class="action-row">
+          <div class="d-flex">
+            <input type="checkbox" class="form-check-input mt-2 me-3" checked>
+            <div class="flex-grow-1">
+              <input type="text" class="form-control mb-2" value="Deploy pipeline'ı 10 dakikaya indir">
+              <div class="row g-2">
+                <div class="col-md-4">
+                  <label class="small text-muted">Atanan</label>
+                  <select class="form-select form-select-sm">
+                    <option>— atanmadı —</option>
+                    <option selected>Burak Demir</option>
+                    <option>Can Aydın</option>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label class="small text-muted">Son tarih</label>
+                  <input type="date" class="form-control form-control-sm" value="2026-05-28">
+                </div>
+                <div class="col-md-5">
+                  <label class="small text-muted">Kaynak</label>
+                  <input class="form-control form-control-sm" value="🤖 AI · Next Steps kartından" readonly>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action 2 -->
+        <div class="action-row">
+          <div class="d-flex">
+            <input type="checkbox" class="form-check-input mt-2 me-3" checked>
+            <div class="flex-grow-1">
+              <input type="text" class="form-control mb-2" value="Build cache yapılandırmasını gözden geçir">
+              <div class="row g-2">
+                <div class="col-md-4">
+                  <label class="small text-muted">Atanan</label>
+                  <select class="form-select form-select-sm">
+                    <option selected>— atanmadı —</option>
+                    <option>Burak Demir</option>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label class="small text-muted">Son tarih</label>
+                  <input type="date" class="form-control form-control-sm">
+                </div>
+                <div class="col-md-5">
+                  <label class="small text-muted">Kaynak</label>
+                  <input class="form-control form-control-sm" value="🤖 AI · Next Steps kartından" readonly>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action 3 -->
+        <div class="action-row">
+          <div class="d-flex">
+            <input type="checkbox" class="form-check-input mt-2 me-3" checked>
+            <div class="flex-grow-1">
+              <input type="text" class="form-control mb-2" value="Code review SLA tanımla — 24 saat hedef">
+              <div class="row g-2">
+                <div class="col-md-4">
+                  <label class="small text-muted">Atanan</label>
+                  <select class="form-select form-select-sm">
+                    <option>— atanmadı —</option>
+                    <option selected>Ayşe Yılmaz</option>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label class="small text-muted">Son tarih</label>
+                  <input type="date" class="form-control form-control-sm" value="2026-05-21">
+                </div>
+                <div class="col-md-5">
+                  <label class="small text-muted">Kaynak</label>
+                  <input class="form-control form-control-sm" value="🤖 AI · Next Steps kartından" readonly>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action 4 - carried over -->
+        <div class="action-row">
+          <div class="d-flex">
+            <input type="checkbox" class="form-check-input mt-2 me-3">
+            <div class="flex-grow-1">
+              <input type="text" class="form-control mb-2" value="Sprint planning toplantısını 1 saate indir">
+              <div class="row g-2">
+                <div class="col-md-4">
+                  <label class="small text-muted">Atanan</label>
+                  <select class="form-select form-select-sm">
+                    <option selected>— atanmadı —</option>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label class="small text-muted">Son tarih</label>
+                  <input type="date" class="form-control form-control-sm">
+                </div>
+                <div class="col-md-5">
+                  <label class="small text-muted">Kaynak</label>
+                  <input class="form-control form-control-sm" value="🔄 Sprint 22'den devreden" readonly>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="d-flex justify-content-end gap-2 mt-3 pt-3 border-top">
+          <button class="btn btn-outline-secondary">Sadece Kaydet</button>
+          <button class="btn btn-secondary">Kaydet & Jira'ya Gönder (3 ticket)</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right: 4 columns compact + maturity -->
+    <div class="col-lg-4">
+
+      <!-- Compact columns -->
+      <h6 class="text-secondary">Tahta (özet)</h6>
+      <div class="row g-2 mb-3">
+        <div class="col-6">
+          <div class="col-board-mini">
+            <div class="col-mini-header">İyi Giden (2)</div>
+            <div class="mini-card">Deploy otomasyonu hızlandı 👍 2</div>
+            <div class="mini-card">QA reopen %60 düştü 👍 1</div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="col-board-mini">
+            <div class="col-mini-header">Geliştirilebilir (4)</div>
+            <div class="mini-card">Deploy süresi 40 dk 👍 5</div>
+            <div class="mini-card">Pipeline retry'lar 👍 3</div>
+            <div class="mini-card">Build cache 👍 2</div>
+            <div class="mini-card">🤖 Code review yavaş 👍 4</div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="col-board-mini">
+            <div class="col-mini-header">Tartışılacak (1)</div>
+            <div class="mini-card">Sprint planning uzun mu 👍 1</div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="col-board-mini col-next-highlight">
+            <div class="col-mini-header">⭐ Devam Adımları (3)</div>
+            <div class="mini-card">🤖 Pipeline 10 dk altına 👍 6</div>
+            <div class="mini-card">🤖 Build cache 👍 2</div>
+            <div class="mini-card">🤖 Code review SLA 👍 3</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Maturity -->
+      <div class="maturity-box">
+        <h6 class="text-secondary">📊 Olgunluk Skoru</h6>
+        <p class="small text-muted">Aksiyonları onayladıktan sonra hesaplanabilir.</p>
+        <button class="btn btn-secondary btn-sm">Olgunluk Skorunu Hesapla</button>
+
+        <hr>
+
+        <!-- Hesaplandıktan sonra görünür hali -->
+        <div class="text-muted small">Önceki retro skoru:</div>
+        <div class="gauge-mini my-2">65</div>
+        <div class="small">Seviye: NORMING</div>
+        <a href="11-maturity.html" class="small">Detayları gör →</a>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

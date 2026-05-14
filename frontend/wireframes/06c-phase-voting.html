@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>RetroAI — Retro Tahtası · Faz 3 Oylama</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  body { background:#f5f5f5; font-family:system-ui,sans-serif; }
+  .col-board { background:#eee; padding:12px; border-radius:6px; min-height:300px; }
+  .col-header { font-weight:700; color:#444; margin-bottom:12px; text-transform:uppercase; font-size:12px; letter-spacing:0.5px; display:flex; justify-content:space-between; }
+  .col-next { border:2px solid #777; }
+  .retro-card { background:#fff; border:1px solid #ccc; padding:12px; margin-bottom:8px; border-radius:4px; display:flex; justify-content:space-between; align-items:flex-start; }
+  .retro-card .content { flex:1; padding-right:12px; }
+  .vote-block { text-align:center; min-width:54px; }
+  .vote-btn { background:#fff; border:1px solid #888; border-radius:6px; padding:6px 8px; cursor:pointer; font-size:14px; }
+  .vote-btn:hover { background:#eee; }
+  .vote-btn.voted { background:#555; color:#fff; border-color:#444; }
+  .vote-count { display:block; font-size:18px; font-weight:700; color:#333; margin-top:2px; }
+  .vote-count.hot { color:#000; }
+  .theme-badge { background:#ddd; padding:1px 6px; border-radius:3px; font-size:10px; color:#444; }
+  /* Phase progress bar */
+  .phase-bar { display:flex; align-items:center; gap:8px; }
+  .phase-step { padding:6px 14px; background:#e2e2e2; border-radius:20px; font-size:12px; color:#666; }
+  .phase-step.done { background:#bbb; color:#fff; }
+  .phase-step.active { background:#444; color:#fff; font-weight:700; }
+  .phase-arrow { color:#aaa; }
+  .vote-counter-big { background:#333; color:#fff; padding:6px 14px; border-radius:6px; font-weight:700; font-size:15px; }
+  .vote-counter-big.warning { background:#777; }
+  .participation-dot { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:3px; }
+  .dot-green { background:#888; } .dot-yellow { background:#bbb; } .dot-grey { background:#ddd; border:1px solid #ccc; }
+  .theme-side { background:#fff; border:1px solid #ddd; padding:10px; border-radius:6px; font-size:12px; }
+  .theme-side .row-line { padding:4px 0; border-bottom:1px solid #eee; display:flex; justify-content:space-between; }
+  .theme-side .row-line:last-child { border-bottom:0; }
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<nav class="navbar navbar-light bg-light border-bottom px-3 py-2">
+  <span class="fs-5 fw-bold text-secondary">RetroAI</span>
+  <select class="form-select form-select-sm w-auto"><option>Payment Squad</option></select>
+  <div class="text-muted small">Ayşe Yılmaz (board sahibi) · <a href="01-login.html">Çıkış</a></div>
+</nav>
+
+<!-- Sub bar -->
+<div class="bg-white border-bottom px-3 py-2">
+  <div class="d-flex align-items-center flex-wrap gap-3">
+    <strong class="text-secondary">Sprint 24 Retro</strong>
+
+    <div class="phase-bar">
+      <span class="phase-step done">✓ 1. Yazma</span>
+      <span class="phase-arrow">→</span>
+      <span class="phase-step done">✓ 2. Gruplama</span>
+      <span class="phase-arrow">→</span>
+      <span class="phase-step active">3. Oylama</span>
+      <span class="phase-arrow">→</span>
+      <span class="phase-step">4. Final Değerlendirme</span>
+    </div>
+
+    <!-- Phase controls -->
+    <div class="ms-auto d-flex gap-2 align-items-center">
+      <span class="vote-counter-big">Kalan oyun: 2/3</span>
+      <button class="btn btn-sm btn-outline-secondary" onclick="location='06b-phase-grouping.html'">← Gruplamaya Dön</button>
+      <button class="btn btn-sm btn-secondary" onclick="location='06d-phase-discussion.html'">Final Değerlendirmeye Geç →</button>
+    </div>
+  </div>
+  <div class="d-flex align-items-center gap-3 mt-2 small text-muted">
+    <span>
+      Katılım:
+      <span class="participation-dot dot-green"></span>Ayşe (3)
+      <span class="participation-dot dot-yellow ms-1"></span>Burak (1)
+      <span class="participation-dot dot-grey ms-1"></span>Can (0)
+      <span class="participation-dot dot-green ms-1"></span>Misafir: Ahmet K. (2)
+    </span>
+    <span class="badge bg-warning text-dark">Mock Mode</span>
+  </div>
+</div>
+
+<div class="container-fluid p-3">
+
+  <!-- Phase info -->
+  <div class="alert alert-light border d-flex justify-content-between align-items-center">
+    <div>
+      <strong>Oylama fazındasın.</strong> Sana ve her ekip üyesine 3 oy hakkı verildi. En önemli gördüğün kartlara oy ver.
+      <br><small class="text-muted">Bu fazda kart ekleyemez, kart düzenleyemez, kart silemezsin.</small>
+    </div>
+  </div>
+
+  <div class="row g-3">
+
+    <!-- Left: 4 columns -->
+    <div class="col-lg-9">
+      <div class="row g-2">
+
+        <!-- GOOD -->
+        <div class="col-md-6">
+          <div class="col-board">
+            <div class="col-header"><span>İyi Giden</span><span class="text-muted">2 kart</span></div>
+            <div class="retro-card">
+              <div class="content">
+                Deploy otomasyonu hızlandı.
+                <div class="mt-1"><span class="theme-badge">QA İyileşmesi</span></div>
+              </div>
+              <div class="vote-block">
+                <button class="vote-btn">👍</button>
+                <span class="vote-count">2</span>
+              </div>
+            </div>
+            <div class="retro-card">
+              <div class="content">
+                QA reopen oranı %60 düştü.
+                <div class="mt-1"><span class="theme-badge">QA İyileşmesi</span></div>
+              </div>
+              <div class="vote-block">
+                <button class="vote-btn voted">✓</button>
+                <span class="vote-count">1</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- IMPROVE -->
+        <div class="col-md-6">
+          <div class="col-board">
+            <div class="col-header"><span>Geliştirilebilir</span><span class="text-muted">4 kart</span></div>
+            <div class="retro-card">
+              <div class="content">
+                Deploy süresi 40 dk'ya çıktı.
+                <div class="mt-1"><span class="theme-badge">CI/CD yavaşlığı</span></div>
+              </div>
+              <div class="vote-block">
+                <button class="vote-btn voted">✓</button>
+                <span class="vote-count hot">5</span>
+              </div>
+            </div>
+            <div class="retro-card">
+              <div class="content">
+                Pipeline retry'lar artıyor.
+                <div class="mt-1"><span class="theme-badge">CI/CD yavaşlığı</span></div>
+              </div>
+              <div class="vote-block">
+                <button class="vote-btn">👍</button>
+                <span class="vote-count">3</span>
+              </div>
+            </div>
+            <div class="retro-card">
+              <div class="content">
+                Build cache miss oranı yüksek.
+                <div class="mt-1"><span class="theme-badge">CI/CD yavaşlığı</span></div>
+              </div>
+              <div class="vote-block">
+                <button class="vote-btn">👍</button>
+                <span class="vote-count">2</span>
+              </div>
+            </div>
+            <div class="retro-card">
+              <div class="content">
+                🤖 Code review süreleri 2 günü aşıyor.
+                <div class="mt-1"><span class="theme-badge">Code Review Yavaşlığı</span></div>
+              </div>
+              <div class="vote-block">
+                <button class="vote-btn">👍</button>
+                <span class="vote-count">4</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DISCUSS -->
+        <div class="col-md-6 mt-2">
+          <div class="col-board">
+            <div class="col-header"><span>Tartışılacak</span><span class="text-muted">1 kart</span></div>
+            <div class="retro-card">
+              <div class="content">
+                Sprint planning çok mu uzun?
+                <div class="mt-1"><span class="theme-badge">Toplantı verimliliği</span></div>
+              </div>
+              <div class="vote-block">
+                <button class="vote-btn">👍</button>
+                <span class="vote-count">1</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NEXT_STEPS -->
+        <div class="col-md-6 mt-2">
+          <div class="col-board col-next">
+            <div class="col-header"><span>Devam Adımları</span><span class="text-muted">3 kart</span></div>
+
+            <div class="retro-card">
+              <div class="content">
+                🤖 Deploy pipeline'ı 10 dk altına indir
+                <div class="mt-1"><small class="text-muted">AI önerisi · CI/CD yavaşlığı</small></div>
+              </div>
+              <div class="vote-block">
+                <button class="vote-btn voted">✓</button>
+                <span class="vote-count hot">6</span>
+              </div>
+            </div>
+
+            <div class="retro-card">
+              <div class="content">
+                🤖 Build cache yapılandırmasını gözden geçir
+                <div class="mt-1"><small class="text-muted">AI önerisi · CI/CD yavaşlığı</small></div>
+              </div>
+              <div class="vote-block">
+                <button class="vote-btn">👍</button>
+                <span class="vote-count">2</span>
+              </div>
+            </div>
+
+            <div class="retro-card">
+              <div class="content">
+                🤖 Code review SLA tanımla — 24 saat hedef
+                <div class="mt-1"><small class="text-muted">AI önerisi · Code Review Yavaşlığı</small></div>
+              </div>
+              <div class="vote-block">
+                <button class="vote-btn">👍</button>
+                <span class="vote-count">3</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Right: theme summary (compact reference) -->
+    <div class="col-lg-3">
+      <div class="theme-side">
+        <h6 class="text-secondary small mb-2">🎯 Temalar (referans)</h6>
+        <div class="row-line"><span>CI/CD yavaşlığı</span><span class="text-muted">3 kart</span></div>
+        <div class="row-line"><span>Code Review Yavaşlığı</span><span class="text-muted">1 kart</span></div>
+        <div class="row-line"><span>QA İyileşmesi</span><span class="text-muted">2 kart</span></div>
+        <div class="row-line"><span>Toplantı verimliliği</span><span class="text-muted">1 kart</span></div>
+      </div>
+
+      <div class="alert alert-light border mt-3 small">
+        <strong>İpucu:</strong> Bir karta oy verdikten sonra ✓ butonuna tekrar basarak oyunu geri çekebilirsin.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
