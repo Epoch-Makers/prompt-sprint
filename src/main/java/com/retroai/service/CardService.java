@@ -107,13 +107,23 @@ public class CardService {
         out.retroId = c.getRetroId();
         out.content = c.getContent();
         out.column = c.getColumn();
-        out.authorId = c.getAuthorUserId();
         out.source = c.getSource();
         out.createdAt = c.getCreatedAt();
+
+        User author = userRepo.findById(c.getAuthorUserId()).orElse(null);
+        boolean isGuestAuthor = author != null
+                && author.getAuthProvider() == com.retroai.enums.AuthProvider.GUEST;
+        if (isGuestAuthor) {
+            out.authorId = null;
+            out.guestSessionId = author.getGuestSessionId();
+        } else {
+            out.authorId = c.getAuthorUserId();
+            out.guestSessionId = null;
+        }
+
         if (anonymous) {
             out.authorName = "Anonim üye";
         } else {
-            User author = userRepo.findById(c.getAuthorUserId()).orElse(null);
             out.authorName = author != null ? author.getFullName() : "Bilinmeyen";
         }
         out.voteCount = voteRepo.countByCardId(c.getId());

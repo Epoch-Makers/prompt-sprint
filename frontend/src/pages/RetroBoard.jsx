@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Sparkles, ArrowLeft, Plus, Trophy } from "lucide-react";
+import { Sparkles, ArrowLeft, Plus, Trophy, Bot } from "lucide-react";
 import {
   getRetro,
   listCards,
@@ -13,7 +13,7 @@ import {
   setPhase,
 } from "../api/retros";
 import { getSprintContext } from "../api/jira";
-import { briefing as fetchBriefing, silentPrompt, analyze, maturity } from "../api/ai";
+import { briefing as fetchBriefing, silentPrompt, analyze, maturity, jiraHistory } from "../api/ai";
 import RetroCard from "../components/RetroCard";
 import CarryOverBanner from "../components/CarryOverBanner";
 import SprintContextBand from "../components/SprintContextBand";
@@ -49,6 +49,7 @@ export default function RetroBoard() {
   const [analysis, setAnalysis] = useState(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [analyzeErr, setAnalyzeErr] = useState(null);
+  const [jiraInsights, setJiraInsights] = useState([]);
 
   const [maturityData, setMaturityData] = useState(null);
   const [maturityLoading, setMaturityLoading] = useState(false);
@@ -269,20 +270,50 @@ export default function RetroBoard() {
     }
   };
 
-  // AI Analyze (GROUPING, board owner)
+  // AI Analyze (GROUPING, board owner) + paralel Jira history
   const runAnalyze = async () => {
     setAnalyzing(true);
     setAnalyzeErr(null);
     try {
-      const a = await analyze(retroId);
-      setAnalysis(a);
+      const [a, j] = await Promise.allSettled([
+        analyze(retroId),
+        jiraHistory(retroId),
+      ]);
+      if (a.status === "fulfilled") {
+        setAnalysis(a.value);
+      } else {
+        setAnalyzeErr(
+          a.reason?.response?.data?.message || "AI analizi başarısız."
+        );
+      }
+      if (j.status === "fulfilled") {
+        setJiraInsights(j.value?.insights || []);
+      }
       reloadCards(); // AI may have created NEXT_STEPS cards
-    } catch (e) {
-      setAnalyzeErr(
-        e?.response?.data?.message || "AI analizi başarısız."
-      );
     } finally {
       setAnalyzing(false);
+    }
+  };
+
+  const addInsightAsCard = async (insight) => {
+    try {
+      await createCard(retroId, {
+        content: insight.suggestedCardTitle,
+        column: "IMPROVE",
+        source: "JIRA_AI",
+      });
+      reloadCards();
+      setToast({
+        open: true,
+        message: "Kart 'Geliştirilebilir' kolonuna eklendi.",
+        variant: "success",
+      });
+    } catch {
+      setToast({
+        open: true,
+        message: "Kart eklenemedi.",
+        variant: "error",
+      });
     }
   };
 
@@ -535,6 +566,42 @@ export default function RetroBoard() {
             <p className="text-sm text-slate-500">
               Analiz çalıştırıldığında tema kümeleri ve SMART aksiyonlar burada listelenir; her aksiyon NEXT_STEPS sütununa otomatik kart düşer.
             </p>
+          )}
+
+          {jiraInsights.length > 0 && (
+            <div className="mt-4 border-t border-slate-200 pt-3">
+              <h4 className="text-sm font-semibold flex items-center gap-2 mb-2">
+                <Bot size={14} className="text-blue-600" /> Jira-kaynaklı İçgörüler
+              </h4>
+              <ul className="space-y-2">
+                {jiraInsights.map((ins, i) => (
+                  <li
+                    key={i}
+                    className="bg-blue-50 border border-blue-200 rounded p-2 flex items-start justify-between gap-2 text-sm"
+                  >
+                    <div className="min-w-0">
+                      <div className="font-medium text-blue-900">
+                        {ins.ticketKey} · {ins.signalType}
+                      </div>
+                      <div className="text-xs text-slate-600">
+                        {ins.description}
+                      </div>
+                      <div className="text-xs text-slate-500 italic mt-1">
+                        Öneri: {ins.suggestedCardTitle}
+                      </div>
+                    </div>
+                    {isBoardOwner && (
+                      <button
+                        onClick={() => addInsightAsCard(ins)}
+                        className="bg-blue-600 text-white text-xs px-2 py-1 rounded whitespace-nowrap hover:bg-blue-700"
+                      >
+                        Kart Olarak Ekle
+                      </button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
         </div>
       )}

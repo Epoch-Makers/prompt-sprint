@@ -168,7 +168,8 @@ public class AtlassianOAuthService {
             User u = new User();
             u.setEmail(userEmail);
             u.setFullName(userName);
-            u.setPasswordHash(passwordEncoder.encode(UUID.randomUUID().toString()));
+            u.setPasswordHash(null); // OAuth-only — no local password
+            u.setAuthProvider(com.retroai.enums.AuthProvider.ATLASSIAN);
             User saved = userRepository.save(u);
             log.info("Atlassian login created new local user — id={} email={}", saved.getId(), saved.getEmail());
             return saved;
@@ -201,7 +202,7 @@ public class AtlassianOAuthService {
         log.info("Atlassian login complete — userId={} email={} cloudId={}",
                 user.getId(), user.getEmail(), cloudId);
         return new AuthDtos.LoginResponse(jwt,
-                new AuthDtos.UserResponse(user.getId(), user.getEmail(), user.getFullName()));
+                new AuthDtos.UserResponse(user.getId(), user.getEmail(), user.getFullName(), user.getAuthProvider()));
     }
 
     private JsonNode exchangeCodeForToken(String code) {

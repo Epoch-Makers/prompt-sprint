@@ -23,6 +23,13 @@ public class ActionDtos {
         public List<ActionInputItem> actions;
     }
 
+    public static class FromCardRequest {
+        @NotNull
+        public Long cardId;
+        public Long assigneeUserId;
+        public LocalDate deadline;
+    }
+
     public static class UpdateActionRequest {
         public ActionStatus status;
         public String title;

@@ -2,10 +2,10 @@
 -- All seed users share the password: demo1234
 -- BCrypt hash verified against Spring Security BCryptPasswordEncoder
 
-MERGE INTO users (id, email, full_name, password_hash, created_at) KEY(id) VALUES
-  (1, 'ayse@example.com',  'Ayşe Yılmaz', '$2a$10$ttOzfFNDd4o3bilcmGCYteUzqSpyl7JlADpBx8URllHZWyrizACy.', CURRENT_TIMESTAMP),
-  (2, 'burak@example.com', 'Burak Demir', '$2a$10$ttOzfFNDd4o3bilcmGCYteUzqSpyl7JlADpBx8URllHZWyrizACy.', CURRENT_TIMESTAMP),
-  (3, 'can@example.com',   'Can Kaya',    '$2a$10$ttOzfFNDd4o3bilcmGCYteUzqSpyl7JlADpBx8URllHZWyrizACy.', CURRENT_TIMESTAMP);
+MERGE INTO users (id, email, full_name, password_hash, auth_provider, created_at) KEY(id) VALUES
+  (1, 'ayse@example.com',  'Ayşe Yılmaz', '$2a$10$ttOzfFNDd4o3bilcmGCYteUzqSpyl7JlADpBx8URllHZWyrizACy.', 'LOCAL', CURRENT_TIMESTAMP),
+  (2, 'burak@example.com', 'Burak Demir', '$2a$10$ttOzfFNDd4o3bilcmGCYteUzqSpyl7JlADpBx8URllHZWyrizACy.', 'LOCAL', CURRENT_TIMESTAMP),
+  (3, 'can@example.com',   'Can Kaya',    '$2a$10$ttOzfFNDd4o3bilcmGCYteUzqSpyl7JlADpBx8URllHZWyrizACy.', 'LOCAL', CURRENT_TIMESTAMP);
 
 MERGE INTO teams (id, name, created_at, created_by_user_id) KEY(id) VALUES
   (1, 'Payment Squad', CURRENT_TIMESTAMP, 1);

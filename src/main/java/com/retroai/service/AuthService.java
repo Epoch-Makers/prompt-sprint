@@ -31,24 +31,26 @@ public class AuthService {
         u.setEmail(req.email);
         u.setFullName(req.fullName);
         u.setPasswordHash(passwordEncoder.encode(req.password));
+        u.setAuthProvider(com.retroai.enums.AuthProvider.LOCAL);
         userRepository.save(u);
-        return new AuthDtos.UserResponse(u.getId(), u.getEmail(), u.getFullName());
+        return new AuthDtos.UserResponse(u.getId(), u.getEmail(), u.getFullName(), u.getAuthProvider());
     }
 
     public AuthDtos.LoginResponse login(AuthDtos.LoginRequest req) {
         User u = userRepository.findByEmail(req.email)
                 .orElseThrow(() -> ApiException.unauthorized("Invalid credentials"));
-        if (!passwordEncoder.matches(req.password, u.getPasswordHash())) {
+        if (u.getPasswordHash() == null
+                || !passwordEncoder.matches(req.password, u.getPasswordHash())) {
             throw ApiException.unauthorized("Invalid credentials");
         }
         String token = jwtService.generateToken(u.getId(), u.getEmail());
         return new AuthDtos.LoginResponse(token,
-                new AuthDtos.UserResponse(u.getId(), u.getEmail(), u.getFullName()));
+                new AuthDtos.UserResponse(u.getId(), u.getEmail(), u.getFullName(), u.getAuthProvider()));
     }
 
     public AuthDtos.UserResponse me(Long userId) {
         User u = userRepository.findById(userId)
                 .orElseThrow(() -> ApiException.unauthorized("User not found"));
-        return new AuthDtos.UserResponse(u.getId(), u.getEmail(), u.getFullName());
+        return new AuthDtos.UserResponse(u.getId(), u.getEmail(), u.getFullName(), u.getAuthProvider());
     }
 }

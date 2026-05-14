@@ -27,6 +27,13 @@ public class ActionController {
         return actionService.bulkCreate(CurrentUser.id(), req);
     }
 
+    /** Spec 4.5 — create an action from a NEXT_STEPS card. */
+    @PostMapping("/from-card")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ActionDtos.ActionResponse createFromCard(@Valid @RequestBody ActionDtos.FromCardRequest req) {
+        return actionService.createFromCard(CurrentUser.id(), req);
+    }
+
     @GetMapping
     public List<ActionDtos.ActionResponse> list(@RequestParam Long teamId,
                                                 @RequestParam(required = false) ActionStatus status,

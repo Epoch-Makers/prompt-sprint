@@ -27,7 +27,8 @@ public class CardDtos {
         public Long retroId;
         public String content;
         public RetroColumn column;
-        public Long authorId;
+        public Long authorId;            // null if author was a guest
+        public String guestSessionId;    // populated if authored by guest
         public String authorName;
         public CardSource source;
         public Long voteCount;

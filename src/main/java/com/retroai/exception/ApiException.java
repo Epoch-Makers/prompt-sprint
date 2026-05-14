@@ -42,4 +42,19 @@ public class ApiException extends RuntimeException {
     public static ApiException serviceUnavailable(String errorCode, String message) {
         return new ApiException(HttpStatus.SERVICE_UNAVAILABLE, errorCode, message);
     }
+
+    /** 410 Gone — used when a closed retro is accessed by a guest. */
+    public static ApiException gone(String message) {
+        return new ApiException(HttpStatus.GONE, "RETRO_CLOSED", message);
+    }
+
+    /** 423 Locked — used when a card/vote operation is attempted in the wrong phase. */
+    public static ApiException phaseLocked(String message) {
+        return new ApiException(HttpStatus.LOCKED, "PHASE_LOCKED", message);
+    }
+
+    /** 502 Bad Gateway — Atlassian / external upstream failures. */
+    public static ApiException badGateway(String message) {
+        return new ApiException(HttpStatus.BAD_GATEWAY, "BAD_GATEWAY", message);
+    }
 }
