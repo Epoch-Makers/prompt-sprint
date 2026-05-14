@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>RetroAI — Retro Tahtası · Faz 1 Yazma</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  body { background:#f5f5f5; font-family:system-ui,sans-serif; }
+  .col-board { background:#eee; padding:12px; border-radius:6px; min-height:340px; }
+  .col-header { font-weight:700; color:#444; margin-bottom:12px; text-transform:uppercase; font-size:12px; letter-spacing:0.5px; display:flex; justify-content:space-between; }
+  .col-next { border:2px dashed #888; }
+  .retro-card { background:#fff; border:1px solid #ccc; padding:10px; margin-bottom:8px; border-radius:4px; }
+  .retro-card .meta { color:#888; font-size:11px; margin-top:6px; display:flex; justify-content:space-between; }
+  .banner { background:#eaeaea; border-left:4px solid #888; padding:8px 14px; margin-bottom:10px; font-size:13px; }
+  /* Phase progress */
+  .phase-bar { display:flex; align-items:center; gap:8px; }
+  .phase-step { padding:6px 14px; background:#e2e2e2; border-radius:20px; font-size:12px; color:#666; }
+  .phase-step.done { background:#bbb; color:#fff; }
+  .phase-step.active { background:#444; color:#fff; font-weight:700; }
+  .phase-arrow { color:#aaa; }
+  /* Next step CTA — büyük vurgu */
+  .next-step-cta { background:#444; color:#fff; padding:8px 18px; border-radius:6px; font-weight:700; border:0; cursor:pointer; }
+  .next-step-cta:hover { background:#222; }
+  .next-step-cta-secondary { background:#fff; border:1px solid #888; color:#333; padding:8px 14px; border-radius:6px; }
+  .add-card-form textarea { background:#fafafa; border:1px dashed #aaa; }
+  .participation-dot { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:3px; }
+  .dot-green { background:#888; } .dot-yellow { background:#bbb; } .dot-grey { background:#ddd; border:1px solid #ccc; }
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<nav class="navbar navbar-light bg-light border-bottom px-3 py-2">
+  <span class="fs-5 fw-bold text-secondary">RetroAI</span>
+  <select class="form-select form-select-sm w-auto"><option>Payment Squad</option></select>
+  <div class="text-muted small">Ayşe Yılmaz (board sahibi) · <a href="01-login.html">Çıkış</a></div>
+</nav>
+
+<!-- Sub bar -->
+<div class="bg-white border-bottom px-3 py-2">
+  <div class="d-flex align-items-center flex-wrap gap-3">
+    <strong class="text-secondary">Sprint 24 Retro</strong>
+
+    <!-- PHASE PROGRESS BAR -->
+    <div class="phase-bar">
+      <span class="phase-step active">1. Yazma</span>
+      <span class="phase-arrow">→</span>
+      <span class="phase-step">2. Gruplama</span>
+      <span class="phase-arrow">→</span>
+      <span class="phase-step">3. Oylama</span>
+      <span class="phase-arrow">→</span>
+      <span class="phase-step">4. Final Değerlendirme</span>
+    </div>
+
+    <!-- BÜYÜK FAZ GEÇİŞ BUTONU — board sahibi için -->
+    <div class="ms-auto d-flex gap-2 align-items-center">
+      <span class="text-muted small">12 kart yazıldı</span>
+      <button class="next-step-cta" onclick="location='06b-phase-grouping.html'">
+        Gruplamaya Geç →
+      </button>
+    </div>
+  </div>
+  <div class="d-flex align-items-center gap-3 mt-2 small text-muted">
+    <span>
+      Katılım:
+      <span class="participation-dot dot-green"></span>Ayşe (3)
+      <span class="participation-dot dot-yellow ms-1"></span>Burak (1)
+      <span class="participation-dot dot-grey ms-1"></span>Can (0)
+      <span class="participation-dot dot-green ms-1"></span>Misafir: Ahmet K. (2)
+    </span>
+    <span class="badge bg-warning text-dark">Mock Mode</span>
+  </div>
+</div>
+
+<div class="container-fluid p-3">
+
+  <!-- Carry-over banner -->
+  <div class="banner">
+    🔄 <strong>3 aksiyon</strong> önceki retrodan (Sprint 23) otomatik olarak taşındı.
+    <a href="09-actions.html" class="ms-2">Aksiyonlara git →</a>
+  </div>
+
+  <!-- Sprint context -->
+  <div class="banner">📊 <strong>Sprint Bağlamı:</strong> 12 story planlandı, 8 tamam, 2 bug açıldı, velocity %70.</div>
+
+  <!-- Faz açıklaması -->
+  <div class="alert alert-light border d-flex justify-content-between align-items-center">
+    <div>
+      <strong>Yazma fazındasın.</strong> 4 kolonun her birine kart ekleyebilirsin. Diğer ekip üyeleri ve misafirler de aynı anda yazabilir.
+      <br><small class="text-muted">Hazır olduğunda board sahibi "Gruplamaya Geç →" ile bir sonraki adıma ilerletir.</small>
+    </div>
+  </div>
+
+  <div class="row g-3">
+
+    <!-- GOOD -->
+    <div class="col-md-3">
+      <div class="col-board">
+        <div class="col-header"><span>İyi Giden</span><span class="text-muted">2 kart</span></div>
+
+        <div class="retro-card">
+          Deploy otomasyonu hızlandı.
+          <div class="meta"><span>Anonim üye</span><span>✏️ 🗑</span></div>
+        </div>
+        <div class="retro-card">
+          QA gate refactoru sonrası reopen oranı %60 düştü.
+          <div class="meta"><span>Anonim üye</span><span></span></div>
+        </div>
+
+        <!-- Add card form — AKTİF -->
+        <div class="add-card-form mt-2">
+          <textarea class="form-control form-control-sm" rows="2" placeholder="+ Kart ekle (Enter ile)"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- IMPROVE -->
+    <div class="col-md-3">
+      <div class="col-board">
+        <div class="col-header"><span>Geliştirilebilir</span><span class="text-muted">4 kart</span></div>
+
+        <div class="retro-card">
+          Deploy süresi 40 dakikaya çıktı.
+          <div class="meta"><span>Anonim üye</span><span></span></div>
+        </div>
+        <div class="retro-card">
+          Pipeline retry'lar artıyor.
+          <div class="meta"><span>Anonim üye</span><span></span></div>
+        </div>
+        <div class="retro-card">
+          Build cache miss oranı yüksek.
+          <div class="meta"><span>Anonim üye</span><span></span></div>
+        </div>
+        <div class="retro-card">
+          Code review süreleri 2 günü aşıyor.
+          <div class="meta"><span>Misafir: Ahmet K.</span><span></span></div>
+        </div>
+
+        <div class="add-card-form mt-2">
+          <textarea class="form-control form-control-sm" rows="2" placeholder="+ Kart ekle (Enter ile)"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- DISCUSS -->
+    <div class="col-md-3">
+      <div class="col-board">
+        <div class="col-header"><span>Tartışılacak</span><span class="text-muted">1 kart</span></div>
+
+        <div class="retro-card">
+          Sprint planning toplantıları çok mu uzun?
+          <div class="meta"><span>Ayşe Yılmaz</span><span>✏️ 🗑</span></div>
+        </div>
+
+        <div class="add-card-form mt-2">
+          <textarea class="form-control form-control-sm" rows="2" placeholder="+ Kart ekle (Enter ile)"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- NEXT_STEPS -->
+    <div class="col-md-3">
+      <div class="col-board col-next">
+        <div class="col-header"><span>Devam Adımları</span><span class="text-muted">0 kart</span></div>
+        <p class="text-muted small text-center py-4">
+          Bu kolon Gruplama fazında AI önerileriyle dolacak.
+          <br>İstersen sen de elle ekleyebilirsin.
+        </p>
+
+        <div class="add-card-form mt-2">
+          <textarea class="form-control form-control-sm" rows="2" placeholder="+ Devam adımı ekle"></textarea>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Alt — Faz geçiş butonunu tekrar göster, kaçırma riski olmasın -->
+  <div class="text-center mt-4 py-3 border-top">
+    <p class="text-muted small mb-2">Yazma tamamlandığında bir sonraki adıma geç:</p>
+    <button class="next-step-cta" onclick="location='06b-phase-grouping.html'">
+      ✓ Yazma Bitti, Gruplamaya Geç →
+    </button>
+    <p class="text-muted small mt-2">
+      <em>Bu buton yalnızca board sahibinde görünür. Diğer üyeler için gizlidir.</em>
+    </p>
+  </div>
+
+</div>
+
+<!-- Silent prompt modal (sessiz üyeye görünür) -->
+<div style="position:fixed; bottom:24px; right:24px; background:#fff; border:1px solid #888; padding:16px; border-radius:8px; max-width:320px; box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+  <strong class="text-secondary">💡 Sana özel başlangıç sorusu</strong>
+  <p class="small mt-2 mb-2">Bu sprintte seni en çok ne mutlu etti? Tek cümleyle yazabilir misin?</p>
+  <button class="btn btn-sm btn-secondary">Anladım, kart yazacağım</button>
+  <small class="text-muted d-block mt-2">— Yalnızca sana görünür</small>
+</div>
+
+</body>
+</html>

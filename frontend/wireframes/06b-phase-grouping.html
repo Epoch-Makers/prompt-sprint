@@ -6,26 +6,43 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
   body { background:#f5f5f5; font-family:system-ui,sans-serif; }
-  .col-board { background:#eee; padding:12px; border-radius:6px; min-height:300px; }
+  .col-board { background:#eee; padding:12px; border-radius:6px; min-height:280px; }
   .col-header { font-weight:700; color:#444; margin-bottom:12px; text-transform:uppercase; font-size:12px; letter-spacing:0.5px; display:flex; justify-content:space-between; }
   .col-next { border:2px solid #777; }
   .retro-card { background:#fff; border:1px solid #ccc; padding:10px; margin-bottom:8px; border-radius:4px; cursor:move; }
   .retro-card.draggable::before { content:"⋮⋮ "; color:#aaa; }
   .theme-badge { background:#ddd; padding:1px 6px; border-radius:3px; font-size:10px; color:#444; }
   .banner { background:#eaeaea; border-left:4px solid #888; padding:8px 14px; margin-bottom:10px; font-size:13px; }
-  /* Phase progress bar */
+  /* Phase progress */
   .phase-bar { display:flex; align-items:center; gap:8px; }
   .phase-step { padding:6px 14px; background:#e2e2e2; border-radius:20px; font-size:12px; color:#666; }
   .phase-step.done { background:#bbb; color:#fff; }
   .phase-step.active { background:#444; color:#fff; font-weight:700; }
   .phase-arrow { color:#aaa; }
+  /* Phase transition buttons */
+  .next-step-cta { background:#444; color:#fff; padding:8px 18px; border-radius:6px; font-weight:700; border:0; cursor:pointer; }
+  .next-step-cta:hover { background:#222; }
+  .next-step-cta:disabled { background:#bbb; cursor:not-allowed; }
+  .back-step-cta { background:#fff; border:1px solid #888; color:#333; padding:8px 14px; border-radius:6px; }
+  /* AI Analiz CTA — büyük vurgu */
+  .ai-mega-cta {
+    background: linear-gradient(135deg, #555 0%, #333 100%);
+    color:#fff; padding:18px 32px; border-radius:8px; border:0;
+    font-size:18px; font-weight:700; cursor:pointer;
+    box-shadow:0 4px 12px rgba(0,0,0,0.15);
+  }
+  .ai-mega-cta:hover { background:#222; }
+  .ai-zone {
+    background:#fff; border:2px dashed #888; padding:24px;
+    border-radius:8px; text-align:center; margin-bottom:16px;
+  }
+  .ai-zone.done { background:#f3f3f3; border-style:solid; }
   /* Theme panel */
   .theme-panel { background:#fff; border:1px solid #ccc; padding:12px; border-radius:6px; }
   .theme-card { background:#f8f8f8; border:1px solid #ddd; padding:10px; margin-bottom:8px; border-radius:4px; }
   .urgency-high { background:#888; color:#fff; padding:1px 6px; border-radius:3px; font-size:10px; }
   .urgency-mid { background:#bbb; color:#fff; padding:1px 6px; border-radius:3px; font-size:10px; }
   .insight-card { background:#fafafa; border:1px dashed #999; padding:10px; margin-bottom:8px; border-radius:4px; }
-  .ai-icon { color:#777; }
   .participation-dot { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:3px; }
   .dot-green { background:#888; } .dot-yellow { background:#bbb; } .dot-grey { background:#ddd; border:1px solid #ccc; }
 </style>
@@ -39,12 +56,11 @@
   <div class="text-muted small">Ayşe Yılmaz (board sahibi) · <a href="01-login.html">Çıkış</a></div>
 </nav>
 
-<!-- Sub bar with PhaseProgressBar -->
+<!-- Sub bar -->
 <div class="bg-white border-bottom px-3 py-2">
   <div class="d-flex align-items-center flex-wrap gap-3">
     <strong class="text-secondary">Sprint 24 Retro</strong>
 
-    <!-- Phase progress -->
     <div class="phase-bar">
       <span class="phase-step done">✓ 1. Yazma</span>
       <span class="phase-arrow">→</span>
@@ -55,10 +71,10 @@
       <span class="phase-step">4. Final Değerlendirme</span>
     </div>
 
-    <!-- Phase controls (board owner only) -->
-    <div class="ms-auto">
-      <button class="btn btn-sm btn-outline-secondary" onclick="location='06a-phase-writing.html'">← Yazma'ya Dön</button>
-      <button class="btn btn-sm btn-secondary" onclick="location='06c-phase-voting.html'">Oylamaya Geç →</button>
+    <!-- BÜYÜK FAZ GEÇİŞ BUTONLARI -->
+    <div class="ms-auto d-flex gap-2 align-items-center">
+      <button class="back-step-cta" onclick="location='06a-phase-writing.html'">← Yazma'ya Dön</button>
+      <button class="next-step-cta" onclick="location='06c-phase-voting.html'">Oylamaya Geç →</button>
     </div>
   </div>
   <div class="d-flex align-items-center gap-3 mt-2 small text-muted">
@@ -75,31 +91,35 @@
 
 <div class="container-fluid p-3">
 
-  <!-- Banners -->
-  <div class="banner">📊 <strong>Sprint Bağlamı:</strong> 12 story planlandı, 8 tamam, 2 bug, velocity %70.</div>
+  <!-- Faz açıklaması -->
+  <div class="alert alert-light border">
+    <strong>Gruplama fazındasın.</strong> Yeni kart eklenmesi kapatıldı. Bu fazda:
+    <br>① Benzer kartları AI ile otomatik grupla, ② kartları kolonlar arası taşı, ③ tartışılacak ana temaları belirle.
+  </div>
 
-  <!-- Phase-specific info -->
-  <div class="alert alert-light border d-flex justify-content-between align-items-center">
-    <div>
-      <strong>Gruplama fazındasın.</strong> Kartlar kolonlar arası taşınabilir. Yeni kart eklenemez, oy verilemez.
-      <br><small class="text-muted">"AI Analiz Et" butonuna basarak benzer kartları otomatik tema kümelerine grupla.</small>
-    </div>
-    <button class="btn btn-secondary">🤖 AI Analiz Et</button>
+  <!-- AI ANALIZ MEGA CTA — analiz öncesi vurgulu zone -->
+  <div class="ai-zone" id="ai-zone-pre">
+    <p class="text-muted small mb-2">11 kart yazıldı. AI hepsini okuyup tema kümelerine ayıracak ve "Devam Adımları" için SMART aksiyon önerileri üretecek.</p>
+    <button class="ai-mega-cta">🤖 AI Analiz Et</button>
+    <p class="text-muted small mt-3 mb-0">⏱ Yaklaşık 15-30 saniye sürer · Sadece board sahibi tetikleyebilir</p>
+  </div>
+
+  <!-- AI ANALIZ DONE state (yorum: analiz tamamlandığında bu görünür) -->
+  <div class="ai-zone done" id="ai-zone-done" style="display:none">
+    ✓ AI Analiz tamamlandı — 3 tema kümesi, 3 aksiyon önerisi üretildi.
+    <button class="btn btn-sm btn-outline-secondary ms-3">Yeniden Analiz Et</button>
   </div>
 
   <div class="row g-3">
 
-    <!-- Left: 4 columns -->
+    <!-- Left: 4 kolon -->
     <div class="col-lg-8">
       <div class="row g-2">
 
         <!-- GOOD -->
         <div class="col-md-6">
           <div class="col-board">
-            <div class="col-header">
-              <span>İyi Giden</span>
-              <span class="text-muted">2 kart</span>
-            </div>
+            <div class="col-header"><span>İyi Giden</span><span class="text-muted">2 kart</span></div>
             <div class="retro-card draggable">
               Deploy otomasyonu hızlandı.
               <div class="mt-1"><span class="theme-badge">QA İyileşmesi</span></div>
@@ -114,10 +134,7 @@
         <!-- IMPROVE -->
         <div class="col-md-6">
           <div class="col-board">
-            <div class="col-header">
-              <span>Geliştirilebilir</span>
-              <span class="text-muted">4 kart</span>
-            </div>
+            <div class="col-header"><span>Geliştirilebilir</span><span class="text-muted">4 kart</span></div>
             <div class="retro-card draggable">
               Deploy süresi 40 dk'ya çıktı.
               <div class="mt-1"><span class="theme-badge">CI/CD yavaşlığı</span></div>
@@ -131,7 +148,7 @@
               <div class="mt-1"><span class="theme-badge">CI/CD yavaşlığı</span></div>
             </div>
             <div class="retro-card draggable">
-              <span class="ai-icon">🤖</span> Code review süreleri 2 günü aşıyor.
+              Code review süreleri 2 günü aşıyor.
               <div class="mt-1"><span class="theme-badge">Code Review Yavaşlığı</span></div>
             </div>
           </div>
@@ -140,10 +157,7 @@
         <!-- DISCUSS -->
         <div class="col-md-6 mt-2">
           <div class="col-board">
-            <div class="col-header">
-              <span>Tartışılacak</span>
-              <span class="text-muted">1 kart</span>
-            </div>
+            <div class="col-header"><span>Tartışılacak</span><span class="text-muted">1 kart</span></div>
             <div class="retro-card draggable">
               Sprint planning çok mu uzun?
               <div class="mt-1"><span class="theme-badge">Toplantı verimliliği</span></div>
@@ -151,23 +165,23 @@
           </div>
         </div>
 
-        <!-- NEXT_STEPS — vurgulu -->
+        <!-- NEXT_STEPS — AI çıktısıyla dolar -->
         <div class="col-md-6 mt-2">
           <div class="col-board col-next">
             <div class="col-header">
-              <span>Devam Adımları (AI önerileri buraya düşer)</span>
+              <span>⭐ Devam Adımları (AI tarafından dolduruldu)</span>
               <span class="text-muted">3 kart</span>
             </div>
             <div class="retro-card draggable">
-              <span class="ai-icon">🤖</span> Deploy pipeline'ı 10 dk altına indir
+              🤖 Deploy pipeline'ı 10 dk altına indir
               <div class="mt-1"><small class="text-muted">AI önerisi · CI/CD yavaşlığı</small></div>
             </div>
             <div class="retro-card draggable">
-              <span class="ai-icon">🤖</span> Build cache yapılandırmasını gözden geçir
+              🤖 Build cache yapılandırmasını gözden geçir
               <div class="mt-1"><small class="text-muted">AI önerisi · CI/CD yavaşlığı</small></div>
             </div>
             <div class="retro-card draggable">
-              <span class="ai-icon">🤖</span> Code review SLA tanımla — 24 saat hedef
+              🤖 Code review SLA tanımla — 24 saat hedef
               <div class="mt-1"><small class="text-muted">AI önerisi · Code Review Yavaşlığı</small></div>
             </div>
           </div>
@@ -176,12 +190,15 @@
       </div>
     </div>
 
-    <!-- Right: ThemeClusterPanel + JiraInsights -->
+    <!-- Right: AI Analiz çıktısı — tema kümeleri + Jira insights -->
     <div class="col-lg-4">
-      <div class="theme-panel mb-3">
-        <h6 class="text-secondary">🎯 Tema Kümeleri (AI çıktısı)</h6>
 
-        <div class="theme-card">
+      <!-- Theme clusters -->
+      <div class="theme-panel mb-3">
+        <h6 class="text-secondary">🎯 Tema Kümeleri</h6>
+        <small class="text-muted">AI Analiz çıktısı</small>
+
+        <div class="theme-card mt-2">
           <div class="d-flex justify-content-between">
             <strong>CI/CD yavaşlığı</strong>
             <span class="urgency-high">YÜKSEK</span>
@@ -194,7 +211,7 @@
             <strong>Code Review Yavaşlığı</strong>
             <span class="urgency-mid">ORTA</span>
           </div>
-          <div class="text-muted small">Moral: −1 · 1 kart bu kümede</div>
+          <div class="text-muted small">Moral: −1 · 1 kart</div>
         </div>
 
         <div class="theme-card">
@@ -202,10 +219,11 @@
             <strong>QA İyileşmesi</strong>
             <span class="urgency-mid" style="background:#777">POZİTİF</span>
           </div>
-          <div class="text-muted small">Moral: +3 · 2 kart bu kümede</div>
+          <div class="text-muted small">Moral: +3 · 2 kart</div>
         </div>
       </div>
 
+      <!-- Jira insights -->
       <div class="theme-panel">
         <h6 class="text-secondary">🤖 Jira-Kaynaklı İçgörüler</h6>
         <small class="text-muted d-block mb-2">AI ticket geçmişine baktı:</small>
@@ -214,7 +232,6 @@
           <strong class="small">BUG-1453</strong>
           <span class="theme-badge ms-1">STATUS_BOUNCING</span>
           <div class="small text-muted mt-1">3 kez In Progress → To Do döndü</div>
-          <div class="small mt-1"><strong>Önerilen kart:</strong> Gereksinim netleştirme</div>
           <button class="btn btn-sm btn-outline-secondary mt-2">+ Kart Olarak Ekle</button>
         </div>
 
@@ -225,10 +242,22 @@
           <button class="btn btn-sm btn-outline-secondary mt-2">+ Kart Olarak Ekle</button>
         </div>
       </div>
+
     </div>
 
   </div>
-</div>
 
+  <!-- Alt — Faz geçiş butonu tekrar -->
+  <div class="text-center mt-4 py-3 border-top">
+    <p class="text-muted small mb-2">Gruplama tamamlandığında bir sonraki adıma geç:</p>
+    <button class="next-step-cta" onclick="location='06c-phase-voting.html'">
+      ✓ Gruplama Bitti, Oylamaya Geç →
+    </button>
+    <p class="text-muted small mt-2">
+      <em>Bu buton yalnızca board sahibinde görünür.</em>
+    </p>
+  </div>
+
+</div>
 </body>
 </html>

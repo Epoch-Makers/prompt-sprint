@@ -3,6 +3,7 @@ target/
 out/
 dist/
 build/
+frontend/dist/
 
 # Node
 node_modules/

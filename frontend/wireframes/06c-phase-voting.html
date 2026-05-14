@@ -57,11 +57,11 @@
       <span class="phase-step">4. Final Değerlendirme</span>
     </div>
 
-    <!-- Phase controls -->
+    <!-- Phase controls — BÜYÜK -->
     <div class="ms-auto d-flex gap-2 align-items-center">
       <span class="vote-counter-big">Kalan oyun: 2/3</span>
-      <button class="btn btn-sm btn-outline-secondary" onclick="location='06b-phase-grouping.html'">← Gruplamaya Dön</button>
-      <button class="btn btn-sm btn-secondary" onclick="location='06d-phase-discussion.html'">Final Değerlendirmeye Geç →</button>
+      <button style="background:#fff; border:1px solid #888; color:#333; padding:8px 14px; border-radius:6px;" onclick="location='06b-phase-grouping.html'">← Gruplamaya Dön</button>
+      <button style="background:#444; color:#fff; padding:8px 18px; border-radius:6px; font-weight:700; border:0; cursor:pointer;" onclick="location='06d-phase-discussion.html'">Final Değerlendirmeye Geç →</button>
     </div>
   </div>
   <div class="d-flex align-items-center gap-3 mt-2 small text-muted">
@@ -242,6 +242,18 @@
     </div>
 
   </div>
+
+  <!-- Alt — Faz geçiş butonu tekrar (kaçırma riski olmasın) -->
+  <div class="text-center mt-4 py-3 border-top">
+    <p class="text-muted small mb-2">Oylama tamamlandığında bir sonraki adıma geç:</p>
+    <button style="background:#444; color:#fff; padding:8px 18px; border-radius:6px; font-weight:700; border:0; cursor:pointer;" onclick="location='06d-phase-discussion.html'">
+      ✓ Oylama Bitti, Final Değerlendirmeye Geç →
+    </button>
+    <p class="text-muted small mt-2">
+      <em>Bu buton yalnızca board sahibinde görünür.</em>
+    </p>
+  </div>
+
 </div>
 
 </body>

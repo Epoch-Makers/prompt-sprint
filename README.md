@@ -147,6 +147,14 @@ Detaylı kontrat için: [`specs/api-contract.md`](./specs/api-contract.md)
 - **Frontend:** https://test.epochmakers.us
 - **Backend API:** https://api.epochmakers.us
 
+> **Deploy Notu:** Uygulama production'da **reverse proxy (Nginx)** arkasında host edilir. Frontend statik dist `https://test.epochmakers.us` adresinden, backend REST API `https://api.epochmakers.us` adresinden TLS üzerinden dışa açılır. Doğrudan port erişimi yoktur; tüm trafik 443 üzerinden Nginx tarafından backend (`localhost:8081`) ve frontend (`localhost:3000`) servislerine proxy edilir.
+
+### Entegre Edilen API'ler & MCP
+
+- **Anthropic API** (`https://api.anthropic.com`) — AI analiz endpoint'leri için Claude Haiku 4.5 çağrıları.
+- **Atlassian REST API** (`https://{tenant}.atlassian.net/rest/api/3`, `rest/agile/1.0`) — `/myself`, `/board`, `/sprint/{id}/issue?expand=changelog,comments`, `POST /issue`.
+- **Atlassian MCP** (`https://mcp.atlassian.com/v1/mcp`) — Jira ticket geçmişi/yorum/sprint pattern analizi için LLM'in dinamik sorgulama kanalı.
+
 ## AI Araçları & MCP
 
 - **Claude Code CLI** (`claude-sonnet-4-6`) — multi-agent orchestrator
@@ -154,7 +162,20 @@ Detaylı kontrat için: [`specs/api-contract.md`](./specs/api-contract.md)
 
 ## Ekran Görüntüleri
 
-`screenshots/` klasörü altında demo ekranları yer alır (placeholder).
+`screenshots/` klasörü altında demo ekran görüntüleri yer alır. Planlanan görüntüler:
+
+- `01-login.png` — Atlassian OAuth login
+- `02-team-selection.png` — Ekip seçici + retro listesi
+- `03-retro-board-writing.png` — 4 sütunlu kart tahtası (WRITING fazı)
+- `04-participation-indicator.png` — Üye katılım göstergesi
+- `05-ai-analysis.png` — Tema kümeleme + SMART aksiyon
+- `06-voting-phase.png` — Oylama fazı
+- `07-action-approval.png` — Aksiyon onay listesi
+- `08-bulk-jira-result.png` — Bulk Jira ticket sonuçları
+- `09-risk-radar.png` — Action Risk Score panel
+- `10-maturity-score.png` — Ekip olgunluk skoru
+
+_Coming soon — Demo recording sonrası eklenecek._
 
 ## Geliştirme Süreci
 
